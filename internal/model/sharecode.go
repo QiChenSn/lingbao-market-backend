@@ -1,8 +1,8 @@
 package model
 
 type CreateShareCodeRequest struct {
-	Code  string `json:"code" binding:"required"`
-	Price int    `json:"price" binding:"required"` // 前端传字符串，我们在 Service 层转为 int
+	Code  string `json:"code" binding:"required,min=10,max=20"`
+	Price int    `json:"price" binding:"required,min=1,max=999"`
 }
 
 // ShareCode 存入 Redis Hash 中的完整数据模型

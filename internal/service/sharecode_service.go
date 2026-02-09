@@ -2,7 +2,6 @@ package service
 
 import (
 	"context"
-	"errors"
 	"time"
 
 	"lingbao-market-backend/internal/model"
@@ -19,10 +18,6 @@ func NewShareCodeService(repo *repository.ShareCodeRepo) *ShareCodeService {
 
 func (s *ShareCodeService) AddShareCode(ctx context.Context, req model.CreateShareCodeRequest) error {
 	price := req.Price
-
-	if price < 1 || price > 999 {
-		return errors.New("价格无效，必须在 1-999 之间")
-	}
 
 	// 构建内部模型
 	code := &model.ShareCode{
