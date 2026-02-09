@@ -96,3 +96,57 @@ func (r *ShareCodeRepo) GetList(ctx context.Context, sortType string, limit int6
 	}
 	return result, nil
 }
+
+// GetListWithPagination 分页查询
+func (r *ShareCodeRepo) GetListWithPagination(ctx context.Context, sortType string, page, pageSize int) ([]*model.ShareCode, int64, error) {
+	dateStr := time.Now().Format("2006-01-02")
+	keyData := fmt.Sprintf("market:data:%s", dateStr)
+
+	// 决定查询哪个索引
+	var targetIdx string
+	if sortType == "time" {
+		targetIdx = fmt.Sprintf("market:idx:time:%s", dateStr)
+	} else {
+		targetIdx = fmt.Sprintf("market:idx:price:%s", dateStr)
+	}
+
+	// 1. 获取总数
+	total, err := r.rdb.ZCard(ctx, targetIdx).Result()
+	if err != nil {
+		return nil, 0, err
+	}
+
+	if total == 0 {
+		return []*model.ShareCode{}, 0, nil
+	}
+
+	// 2. 计算分页范围
+	start := int64((page - 1) * pageSize)
+	stop := start + int64(pageSize) - 1
+
+	// 3. 从 ZSet 倒序取指定范围的 Code
+	codes, err := r.rdb.ZRevRange(ctx, targetIdx, start, stop).Result()
+	if err != nil || len(codes) == 0 {
+		return []*model.ShareCode{}, total, nil
+	}
+
+	// 4. 拿着 Code 去 Hash 取详情
+	jsonStrings, err := r.rdb.HMGet(ctx, keyData, codes...).Result()
+	if err != nil {
+		return nil, 0, err
+	}
+
+	// 5. 反序列化
+	var result []*model.ShareCode
+	for _, s := range jsonStrings {
+		if s == nil {
+			continue
+		}
+		if str, ok := s.(string); ok {
+			var item model.ShareCode
+			_ = json.Unmarshal([]byte(str), &item)
+			result = append(result, &item)
+		}
+	}
+	return result, total, nil
+}

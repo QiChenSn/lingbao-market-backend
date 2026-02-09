@@ -41,6 +41,7 @@ func main() {
 	// 路由定义
 	r.POST("/sharecode", handler.CreateShareCode)
 	r.GET("/sharecode", handler.ListShareCodes)
+	r.GET("/sharecode/page", handler.ListShareCodesPage)
 
 	serverAddr := cfg.Server.Host + ":" + cfg.Server.Port
 	log.Printf("服务启动在 %s (模式: %s)", serverAddr, cfg.Server.Mode)

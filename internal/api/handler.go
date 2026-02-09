@@ -56,3 +56,23 @@ func (h *Handler) ListShareCodes(c *gin.Context) {
 
 	response.Success(c, list)
 }
+
+// ListShareCodesPage GET /sharecode/page?page=1&pageSize=10&sort=price|time
+func (h *Handler) ListShareCodesPage(c *gin.Context) {
+	var req model.PaginationRequest
+
+	// 绑定查询参数
+	if err := c.ShouldBindQuery(&req); err != nil {
+		response.BadRequest(c, "参数错误: "+err.Error())
+		return
+	}
+
+	// 调用Service
+	result, err := h.svc.GetShareCodesPaginated(c.Request.Context(), req)
+	if err != nil {
+		response.InternalError(c, "获取列表失败")
+		return
+	}
+
+	response.Success(c, result)
+}

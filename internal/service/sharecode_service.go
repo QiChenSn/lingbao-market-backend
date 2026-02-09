@@ -33,3 +33,34 @@ func (s *ShareCodeService) AddShareCode(ctx context.Context, req model.CreateSha
 func (s *ShareCodeService) GetRanking(ctx context.Context, sortBy string, limit int64) ([]*model.ShareCode, error) {
 	return s.repo.GetList(ctx, sortBy, limit)
 }
+
+// GetShareCodesPaginated 分页查询分享码列表
+func (s *ShareCodeService) GetShareCodesPaginated(ctx context.Context, req model.PaginationRequest) (*model.PaginationResponse, error) {
+	// 设置默认值
+	if req.Page <= 0 {
+		req.Page = 1
+	}
+	if req.PageSize <= 0 {
+		req.PageSize = 10
+	}
+	if req.Sort == "" {
+		req.Sort = "price"
+	}
+
+	// 调用repository获取分页数据
+	data, total, err := s.repo.GetListWithPagination(ctx, req.Sort, req.Page, req.PageSize)
+	if err != nil {
+		return nil, err
+	}
+
+	// 计算总页数
+	totalPages := int((total + int64(req.PageSize) - 1) / int64(req.PageSize))
+
+	return &model.PaginationResponse{
+		Data:       data,
+		Total:      total,
+		Page:       req.Page,
+		PageSize:   req.PageSize,
+		TotalPages: totalPages,
+	}, nil
+}
