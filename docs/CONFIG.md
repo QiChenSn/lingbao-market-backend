@@ -87,11 +87,12 @@ cp config.prod.yaml.example config.yaml
 ```
 
 ### Docker部署
+
 ```dockerfile
 # Dockerfile 示例
 FROM golang:1.25-alpine AS builder
 WORKDIR /app
-COPY . .
+COPY .. .
 RUN go build -o server ./cmd/server
 
 FROM alpine:latest

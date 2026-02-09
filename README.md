@@ -62,7 +62,7 @@ redis:
   pool_size: 20
 ```
 
-详细配置说明请参考 [CONFIG.md](CONFIG.md)
+详细配置说明请参考 [CONFIG.md](docs/CONFIG.md)
 
 ### 3. API接口
 

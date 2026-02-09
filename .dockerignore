@@ -4,7 +4,7 @@
 
 # Documentation
 README.md
-CONFIG.md
+docs/CONFIG.md
 *.md
 
 # Build artifacts
