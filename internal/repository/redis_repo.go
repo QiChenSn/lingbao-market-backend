@@ -150,3 +150,53 @@ func (r *ShareCodeRepo) GetListWithPagination(ctx context.Context, sortType stri
 	}
 	return result, total, nil
 }
+
+// IncrementUsage 增加指定分享码的使用次数
+func (r *ShareCodeRepo) IncrementUsage(ctx context.Context, code string) error {
+	dateStr := time.Now().Format("2006-01-02")
+	keyData := fmt.Sprintf("market:data:%s", dateStr)
+
+	// 1. 先获取当前数据
+	jsonString, err := r.rdb.HGet(ctx, keyData, code).Result()
+	if err != nil {
+		return fmt.Errorf("分享码不存在: %w", err)
+	}
+
+	// 2. 反序列化
+	var shareCode model.ShareCode
+	if err := json.Unmarshal([]byte(jsonString), &shareCode); err != nil {
+		return fmt.Errorf("数据解析失败: %w", err)
+	}
+
+	// 3. 增加使用次数
+	shareCode.Used++
+
+	// 4. 重新序列化并保存
+	updatedData, err := json.Marshal(&shareCode)
+	if err != nil {
+		return fmt.Errorf("数据序列化失败: %w", err)
+	}
+
+	// 5. 更新 Redis
+	return r.rdb.HSet(ctx, keyData, code, updatedData).Err()
+}
+
+// GetByCode 根据分享码获取详情
+func (r *ShareCodeRepo) GetByCode(ctx context.Context, code string) (*model.ShareCode, error) {
+	dateStr := time.Now().Format("2006-01-02")
+	keyData := fmt.Sprintf("market:data:%s", dateStr)
+
+	// 从 Hash 中获取数据
+	jsonString, err := r.rdb.HGet(ctx, keyData, code).Result()
+	if err != nil {
+		return nil, fmt.Errorf("分享码不存在: %w", err)
+	}
+
+	// 反序列化
+	var shareCode model.ShareCode
+	if err := json.Unmarshal([]byte(jsonString), &shareCode); err != nil {
+		return nil, fmt.Errorf("数据解析失败: %w", err)
+	}
+
+	return &shareCode, nil
+}

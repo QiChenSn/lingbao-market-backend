@@ -24,6 +24,7 @@ func (s *ShareCodeService) AddShareCode(ctx context.Context, req model.CreateSha
 		Code:       req.Code,
 		Price:      price,
 		CreateTime: time.Now().Unix(),
+		Used:       0, // 初始化使用次数为0
 	}
 
 	// 落库
@@ -63,4 +64,14 @@ func (s *ShareCodeService) GetShareCodesPaginated(ctx context.Context, req model
 		PageSize:   req.PageSize,
 		TotalPages: totalPages,
 	}, nil
+}
+
+// IncrementUsage 增加分享码使用次数
+func (s *ShareCodeService) IncrementUsage(ctx context.Context, code string) error {
+	return s.repo.IncrementUsage(ctx, code)
+}
+
+// GetShareCodeByCode 根据分享码获取详情
+func (s *ShareCodeService) GetShareCodeByCode(ctx context.Context, code string) (*model.ShareCode, error) {
+	return s.repo.GetByCode(ctx, code)
 }

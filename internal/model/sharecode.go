@@ -10,6 +10,7 @@ type ShareCode struct {
 	Code       string `json:"code"`
 	Price      int    `json:"price"`
 	CreateTime int64  `json:"create_time"` // 时间戳
+	Used       int    `json:"used"`        // 使用次数
 }
 
 // ShareCodeResponse 用于返回给前端的结构
@@ -17,6 +18,7 @@ type ShareCodeResponse struct {
 	Code       string `json:"code"`
 	Price      int    `json:"price"`
 	CreateTime int64  `json:"create_time"`
+	Used       int    `json:"used"` // 使用次数
 }
 
 // PaginationRequest 分页请求参数

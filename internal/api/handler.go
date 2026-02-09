@@ -76,3 +76,38 @@ func (h *Handler) ListShareCodesPage(c *gin.Context) {
 
 	response.Success(c, result)
 }
+
+// UseShareCode POST /sharecode/{code}/use - 使用分享码（增加使用次数）
+func (h *Handler) UseShareCode(c *gin.Context) {
+	code := c.Param("code")
+	if code == "" {
+		response.BadRequest(c, "分享码不能为空")
+		return
+	}
+
+	// 增加使用次数
+	if err := h.svc.IncrementUsage(c.Request.Context(), code); err != nil {
+		response.BadRequest(c, "使用分享码失败: "+err.Error())
+		return
+	}
+
+	response.SuccessWithMsg(c, "使用成功", nil)
+}
+
+// GetShareCode GET /sharecode/{code} - 获取指定分享码详情
+func (h *Handler) GetShareCode(c *gin.Context) {
+	code := c.Param("code")
+	if code == "" {
+		response.BadRequest(c, "分享码不能为空")
+		return
+	}
+
+	// 获取分享码详情
+	shareCode, err := h.svc.GetShareCodeByCode(c.Request.Context(), code)
+	if err != nil {
+		response.BadRequest(c, "获取分享码失败: "+err.Error())
+		return
+	}
+
+	response.Success(c, shareCode)
+}

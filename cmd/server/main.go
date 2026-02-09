@@ -42,6 +42,8 @@ func main() {
 	r.POST("/sharecode", handler.CreateShareCode)
 	r.GET("/sharecode", handler.ListShareCodes)
 	r.GET("/sharecode/page", handler.ListShareCodesPage)
+	r.POST("/sharecode/:code/use", handler.UseShareCode)
+	r.GET("/sharecode/:code", handler.GetShareCode)
 
 	serverAddr := cfg.Server.Host + ":" + cfg.Server.Port
 	log.Printf("服务启动在 %s (模式: %s)", serverAddr, cfg.Server.Mode)
