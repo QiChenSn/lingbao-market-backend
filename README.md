@@ -4,14 +4,6 @@
 
 基于Gin开发的灵宝市集分享码共享平台后端。
 
-## 功能特性
-
-- ✅ 分享码创建和查询
-- ✅ Redis数据存储
-- ✅ RESTful API设计
-- ✅ 灵活的配置管理系统（支持环境变量、YAML配置文件）
-- ✅ 生产环境就绪
-
 ## 快速开始
 
 ### 1. 编译运行
@@ -63,39 +55,6 @@ redis:
 ```
 
 详细配置说明请参考 [CONFIG.md](docs/CONFIG.md)
-
-### 3. API接口
-
-#### 创建分享码
-```bash
-POST /sharecode
-Content-Type: application/json
-
-{
-    "code": "string",
-    "price": 0
-}
-```
-
-#### 获取分享码列表
-```bash
-GET /sharecode?sort=time&limit=100
-```
-
-## 部署
-
-### Docker部署
-```bash
-# 构建镜像
-docker build -t lingbao-market-backend .
-
-# 运行容器
-docker run -p 8080:8080 \
-  -e SERVER_PORT=8080 \
-  -e REDIS_ADDR=redis:6379 \
-  -e GIN_MODE=release \
-  lingbao-market-backend
-```
 
 ### 生产环境
 1. 设置环境变量或创建配置文件

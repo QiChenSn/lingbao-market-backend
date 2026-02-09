@@ -86,49 +86,6 @@ cp config.prod.yaml.example config.yaml
 ./server
 ```
 
-### Docker部署
-
-```dockerfile
-# Dockerfile 示例
-FROM golang:1.25-alpine AS builder
-WORKDIR /app
-COPY .. .
-RUN go build -o server ./cmd/server
-
-FROM alpine:latest
-RUN apk --no-cache add ca-certificates
-WORKDIR /root/
-COPY --from=builder /app/server .
-EXPOSE 8080
-
-# 使用环境变量
-ENV SERVER_PORT=8080
-ENV REDIS_ADDR=redis:6379
-ENV GIN_MODE=release
-
-CMD ["./server"]
-```
-
-```yaml
-# docker-compose.yml 示例
-version: '3.8'
-services:
-  app:
-    build: .
-    ports:
-      - "8080:8080"
-    environment:
-      - SERVER_PORT=8080
-      - REDIS_ADDR=redis:6379
-      - GIN_MODE=release
-    depends_on:
-      - redis
-
-  redis:
-    image: redis:alpine
-    ports:
-      - "6379:6379"
-```
 
 ## 配置文件搜索路径
 
