@@ -2,6 +2,7 @@ package api
 
 import (
 	"net/http"
+	"strconv"
 
 	"lingbao-market-backend/internal/model"
 	"lingbao-market-backend/internal/service"
@@ -36,12 +37,18 @@ func (h *Handler) CreateShareCode(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"message": "发布成功"})
 }
 
-// ListShareCodes GET /sharecode?sort=price|time
+// ListShareCodes GET /sharecode?sort=price|time&limit=100
 func (h *Handler) ListShareCodes(c *gin.Context) {
-	// 获取 query 参数，默认按价格排序
 	sort := c.DefaultQuery("sort", "price")
+	limit_str := c.DefaultQuery("limit", "100")
 
-	list, err := h.svc.GetRanking(c.Request.Context(), sort)
+	limit, err := strconv.ParseInt(limit_str, 10, 64)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "limit 参数错误"})
+		return
+	}
+
+	list, err := h.svc.GetRanking(c.Request.Context(), sort, limit)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "获取列表失败"})
 		return

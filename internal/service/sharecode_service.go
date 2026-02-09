@@ -35,7 +35,6 @@ func (s *ShareCodeService) AddShareCode(ctx context.Context, req model.CreateSha
 	return s.repo.SaveCode(ctx, code)
 }
 
-func (s *ShareCodeService) GetRanking(ctx context.Context, sortBy string) ([]*model.ShareCode, error) {
-	// 限制返回前 100 条，防止大量数据拖慢接口
-	return s.repo.GetList(ctx, sortBy, 100)
+func (s *ShareCodeService) GetRanking(ctx context.Context, sortBy string, limit int64) ([]*model.ShareCode, error) {
+	return s.repo.GetList(ctx, sortBy, limit)
 }
