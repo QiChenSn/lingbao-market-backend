@@ -1,7 +1,7 @@
 package model
 
 type CreateShareCodeRequest struct {
-	Code  string `json:"code" binding:"required,min=10,max=20"`
+	Code  string `json:"code" binding:"required,min=5,max=20"`
 	Price int    `json:"price" binding:"required,min=1,max=999"`
 }
 
