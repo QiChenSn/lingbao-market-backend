@@ -28,7 +28,11 @@ func (r *ShareCodeRepo) SaveCode(ctx context.Context, data *model.ShareCode) err
 	keyIdxTime := fmt.Sprintf("market:idx:time:%s", dateStr)   // ZSet: 按时间排
 
 	jsonData, _ := json.Marshal(data)
-	expireTime := 26 * time.Hour // 设置略多于1天的过期时间
+
+	// 计算到第二天零点的过期时间
+	now := time.Now()
+	tomorrow := time.Date(now.Year(), now.Month(), now.Day()+1, 0, 0, 0, 0, now.Location())
+	expireTime := tomorrow.Sub(now)
 
 	// 开启 Pipeline
 	_, err := r.rdb.TxPipelined(ctx, func(pipe redis.Pipeliner) error {
