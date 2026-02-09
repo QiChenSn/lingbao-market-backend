@@ -1,0 +1,35 @@
+# Git
+.git
+.gitignore
+
+# Documentation
+README.md
+CONFIG.md
+*.md
+
+# Build artifacts
+server
+server.exe
+*.exe
+
+# IDE
+.vscode
+.idea
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Config files (should be provided via env or mount)
+config.yaml
+.env
+
+# Test files
+*_test.go
+testdata/
+
+# Coverage
+*.out
+coverage.html

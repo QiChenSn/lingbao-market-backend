@@ -1,0 +1,13 @@
+# 生产环境配置示例
+server:
+  port: "80"
+  host: "0.0.0.0"
+  mode: "release"
+  read_timeout: 120
+
+redis:
+  addr: "redis.example.com:6379"
+  password: "your_redis_password"
+  db: 1
+  pool_size: 20
+  min_idle_conns: 10
