@@ -4,40 +4,38 @@ FROM golang:1.25-alpine AS builder
 # 设置工作目录
 WORKDIR /app
 
-# 设置Go代理
-ENV GOPROXY=https://mirrors.aliyun.com/goproxy/,direct
+# 优化点 1: 替换 Alpine 为国内阿里云源，并安装 git
+# 将 sed 和 apk add 合并为一层，减少镜像层数
+RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories && \
+    apk add --no-cache git
+
+# 优化点 2: 设置 Go 代理（使用 goproxy.cn 通常比 aliyun 更快且稳定）
+ENV GOPROXY=https://goproxy.cn,direct
 ENV GOSUMDB=off
 
-# 安装git（如果需要）
-RUN apk add --no-cache git
-
-# 复制go mod文件
+# 复制 go mod 文件并下载依赖（利用 Docker 缓存）
 COPY go.mod go.sum ./
-
-# 下载依赖
 RUN go mod download
 
 # 复制源代码
 COPY . .
 
-# 编译
-RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o server ./cmd/server
+# 编译（-ldflags="-s -w" 可以大幅缩小二进制体积）
+RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo \
+    -ldflags="-s -w" -o server ./cmd/server
 
-# 最终镜像
+# --- 最终镜像 ---
 FROM alpine:latest
 
-# 安装ca证书
-RUN apk --no-cache add ca-certificates
-
-# 创建非root用户
-RUN adduser -D -s /bin/sh appuser
+# 优化点 3: 同样替换运行环境的 Alpine 源，加速 ca-certificates 安装
+RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories && \
+    apk --no-cache add ca-certificates && \
+    adduser -D -s /bin/sh appuser
 
 WORKDIR /home/appuser
 
-# 从builder阶段复制二进制文件
+# 从 builder 阶段复制二进制文件
 COPY --from=builder /app/server .
-
-# 复制配置文件示例（可选）
 COPY --from=builder /app/config.yaml.example .
 COPY --from=builder /app/.env.example .
 
