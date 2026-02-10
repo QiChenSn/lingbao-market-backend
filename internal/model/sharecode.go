@@ -8,7 +8,7 @@ var (
 )
 
 type CreateShareCodeRequest struct {
-	Code  string `json:"code" binding:"required"`
+	Code  string `json:"code" binding:"required,min=1,max=30"`
 	Price int    `json:"price" binding:"required,min=700,max=980"`
 }
 
