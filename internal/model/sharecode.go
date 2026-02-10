@@ -1,8 +1,15 @@
 package model
 
+import "errors"
+
+// 业务错误定义
+var (
+	ErrPriceOutOfRange = errors.New("价格必须在700-980范围内")
+)
+
 type CreateShareCodeRequest struct {
-	Code  string `json:"code" binding:"required,min=5,max=20"`
-	Price int    `json:"price" binding:"required,min=1,max=999"`
+	Code  string `json:"code" binding:"required"`
+	Price int    `json:"price" binding:"required,min=700,max=980"`
 }
 
 // ShareCode 存入 Redis Hash 中的完整数据模型

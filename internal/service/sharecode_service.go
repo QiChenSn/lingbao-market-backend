@@ -19,6 +19,11 @@ func NewShareCodeService(repo *repository.ShareCodeRepo) *ShareCodeService {
 func (s *ShareCodeService) AddShareCode(ctx context.Context, req model.CreateShareCodeRequest) error {
 	price := req.Price
 
+	// 价格过滤：只接收700-980范围内的价格
+	if price < 700 || price > 980 {
+		return model.ErrPriceOutOfRange
+	}
+
 	// 构建内部模型
 	code := &model.ShareCode{
 		Code:       req.Code,
